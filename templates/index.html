@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connections - Imitación</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      background-color: #f9f9f9;
+      color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .message {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      min-height: 1.5rem;
+    }
+
+    .group-section {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .group-title {
+      font-weight: bold;
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+      color: #2ecc71;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background-color: #fff;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      user-select: none;
+    }
+
+    .card:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.02);
+    }
+
+    .card.selected {
+      background-color: #e0f0ff;
+      border-color: #3399ff;
+    }
+
+    .card.solved {
+      background-color: #c8f7c5;
+      border-color: #2ecc71;
+      color: #333;
+      cursor: default;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-around;
+      gap: 1rem;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      background-color: #1a73e8;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #155cb0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Connections</h1>
+    <p class="subtitle">Encuentra grupos de palabras relacionadas</p>
+
+    <div id="message" class="message"></div>
+
+    <!-- Donde se renderizan los grupos resueltos -->
+    <div id="solvedGroups"></div>
+
+    <!-- Donde se renderizan las tarjetas restantes -->
+    <div class="grid" id="grid"></div>
+
+    <div class="controls">
+      <button id="shuffleBtn">Mezclar</button>
+      <button id="submitBtn">Enviar grupo</button>
+      <button id="resetBtn">Reiniciar</button>
+    </div>
+  </div>
+
+  <script>
+    // Flask pasa los datos aquí
+    const allGroups = {{ allGroups | tojson }};
+
+    let solved = []; // [{name: "", words: []}]
+    let selectedWords = [];
+    let remainingWords = [];
+
+    const grid = document.getElementById("grid");
+    const message = document.getElementById("message");
+    const solvedGroups = document.getElementById("solvedGroups");
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function initGame() {
+      solved = [];
+      selectedWords = [];
+      remainingWords = allGroups.flatMap(g => g.words);
+      renderGame();
+    }
+
+    function renderGame() {
+      solvedGroups.innerHTML = "";
+      grid.innerHTML = "";
+
+      // Mostrar grupos resueltos
+      solved.forEach(group => {
+        const section = document.createElement("div");
+        section.className = "group-section";
+
+        const title = document.createElement("div");
+        title.className = "group-title";
+        title.textContent = group.name;
+
+        const groupGrid = document.createElement("div");
+        groupGrid.className = "grid";
+
+        group.words.forEach(word => {
+          const card = document.createElement("div");
+          card.className = "card solved";
+          card.textContent = word;
+          groupGrid.appendChild(card);
+        });
+
+        section.appendChild(title);
+        section.appendChild(groupGrid);
+        solvedGroups.appendChild(section);
+      });
+
+      // Mostrar cartas restantes
+      const shuffled = shuffle([...remainingWords]);
+      shuffled.forEach(word => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.textContent = word;
+        card.onclick = () => toggleSelect(card);
+        grid.appendChild(card);
+      });
+    }
+
+    function toggleSelect(card) {
+      const word = card.textContent;
+      if (card.classList.contains("selected")) {
+        card.classList.remove("selected");
+        selectedWords = selectedWords.filter(w => w !== word);
+      } else {
+        if (selectedWords.length >= 4) return;
+        card.classList.add("selected");
+        selectedWords.push(word);
+      }
+    }
+
+    function submitGroup() {
+      if (selectedWords.length !== 4) {
+        showMessage("Selecciona exactamente 4 palabras.", false);
+        return;
+      }
+
+      let found = allGroups.find(group =>
+        group.words.every(word => selectedWords.includes(word))
+      );
+
+      if (found) {
+        showMessage(`¡Grupo "${found.name}" correcto! 🎉`, true);
+        solved.push(found);
+        remainingWords = remainingWords.filter(w => !found.words.includes(w));
+        renderGame();
+        selectedWords = [];
+      } else {
+        showMessage("Grupo incorrecto. ❌", false);
+      }
+    }
+
+    function showMessage(text, success) {
+      message.textContent = text;
+      message.style.color = success ? "green" : "red";
+    }
+
+    document.getElementById("submitBtn").addEventListener("click", submitGroup);
+    document.getElementById("shuffleBtn").addEventListener("click", () => {
+      selectedWords = [];
+      renderGame();
+    });
+    document.getElementById("resetBtn").addEventListener("click", initGame);
+
+    // Iniciar juego
+    initGame();
+  </script>
+</body>
+</html>
