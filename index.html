@@ -28,21 +28,30 @@
     .group-section { margin-bottom: 1rem; text-align: left; }
     .group-title { font-weight: bold; margin: 0.5rem 0; font-size: 1.1rem; }
 
-    /* Grid fijo de 4 columnas */
+    /* Grid siempre 4 columnas */
     .grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr); /* Siempre 4 columnas */
+      grid-template-columns: repeat(4, 1fr);
       gap: 0.5rem;
       margin-bottom: 1.5rem;
     }
 
     .card {
-      background-color: #fff; border: 2px solid #ddd; border-radius: 8px;
-      padding: 0.8rem; font-weight: bold; cursor: pointer;
-      transition: all 0.2s ease-in-out; user-select: none; font-size: 0.9rem;
+      background-color: #fff;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      user-select: none;
       text-align: center;
       word-break: break-word;
+
+      /* Ajuste dinámico del tamaño de la carta */
+      padding: clamp(0.4rem, 2vw, 0.8rem);
+      font-size: clamp(0.7rem, 2vw, 0.9rem);
     }
+
     .card:hover { background-color: #f0f0f0; transform: scale(1.02); }
     .card.selected { background-color: #e0f0ff; border-color: #3399ff; }
     .card.solved.darkblue { background-color: #003366; border-color: #001f4d; color: #fff; }
@@ -57,10 +66,9 @@
     }
     button:hover { background-color: #155cb0; }
 
-    /* Ajustes para móviles */
+    /* Ajustes para móviles y pantallas muy estrechas */
     @media (max-width: 480px) {
-      .grid { grid-template-columns: repeat(4, 1fr); gap: 0.3rem; }
-      .card { font-size: 0.7rem; padding: 0.4rem; }
+      .container { max-width: 100%; padding: 0.5rem; }
       h1 { font-size: 1.5rem; }
       .subtitle { font-size: 0.9rem; }
     }
@@ -68,7 +76,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>4x4: B2 English</h1>
+    <h1>4x4</h1>
     <p class="subtitle">
       Create four groups of four · 
       <a href="https://www.nytimes.com/games/connections" target="_blank">A Connections based game</a>
