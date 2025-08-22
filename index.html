@@ -5,12 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Connections - Imitación</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Helvetica Neue', sans-serif;
       background-color: #f9f9f9;
@@ -19,154 +14,113 @@
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
-      padding: 2rem 1rem;
-    }
-
-    .container {
-      text-align: center;
-      max-width: 600px;
-      width: 100%;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .subtitle {
-      font-size: 1rem;
-      color: #666;
-      margin-bottom: 1rem;
-    }
-
-    .message {
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-      min-height: 1.5rem;
-    }
-
-    .group-section {
-      margin-bottom: 1rem;
-      text-align: left;
-    }
-
-    .group-title {
-      font-weight: bold;
-      margin: 0.5rem 0;
-      font-size: 1.1rem;
-      color: #2ecc71;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .card {
-      background-color: #fff;
-      border: 2px solid #ddd;
-      border-radius: 8px;
       padding: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-      user-select: none;
     }
-
-    .card:hover {
-      background-color: #f0f0f0;
-      transform: scale(1.02);
+    .container { text-align: center; max-width: 700px; width: 100%; }
+    h1 { font-size: 2rem; margin-bottom: 0.2rem; }
+    .subtitle { font-size: 1rem; color: #666; margin-bottom: 1rem; }
+    .subtitle a { color: #1a73e8; text-decoration: none; }
+    .subtitle a:hover { text-decoration: underline; }
+    .message { font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; min-height: 1.5rem; }
+    .lives { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; }
+    .life { width: 15px; height: 15px; border-radius: 50%; background-color: #1a73e8; }
+    .life.lost { background-color: #ddd; }
+    .group-section { margin-bottom: 1rem; text-align: left; }
+    .group-title { font-weight: bold; margin: 0.5rem 0; font-size: 1.1rem; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; }
+    @media (max-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background-color: #fff; border: 2px solid #ddd; border-radius: 8px;
+      padding: 0.8rem; font-weight: bold; cursor: pointer;
+      transition: all 0.2s ease-in-out; user-select: none; font-size: 0.9rem;
     }
-
-    .card.selected {
-      background-color: #e0f0ff;
-      border-color: #3399ff;
-    }
-
-    .card.solved {
-      background-color: #c8f7c5;
-      border-color: #2ecc71;
-      color: #333;
-      cursor: default;
-    }
-
-    .controls {
-      display: flex;
-      justify-content: space-around;
-      gap: 1rem;
-    }
-
+    .card:hover { background-color: #f0f0f0; transform: scale(1.02); }
+    .card.selected { background-color: #e0f0ff; border-color: #3399ff; }
+    .card.solved.darkblue { background-color: #003366; border-color: #001f4d; color: #fff; }
+    .card.solved.lightblue { background-color: #cce6ff; border-color: #66b2ff; color: #003366; }
+    .controls { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
     button {
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 6px;
-      background-color: #1a73e8;
-      color: white;
-      cursor: pointer;
+      flex: 1; min-width: 100px; padding: 0.6rem 1rem;
+      font-size: 1rem; border: none; border-radius: 6px;
+      background-color: #1a73e8; color: white; cursor: pointer;
       transition: background 0.2s ease;
     }
-
-    button:hover {
-      background-color: #155cb0;
-    }
+    button:hover { background-color: #155cb0; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Connections</h1>
-    <p class="subtitle">Encuentra grupos de palabras relacionadas</p>
+    <h1>4x4: B2 English</h1>
+    <p class="subtitle">
+      Create four groups of four · 
+      <a href="https://www.nytimes.com/games/connections" target="_blank">A Connections based game</a>
+    </p>
 
     <div id="message" class="message"></div>
+    <div id="lives" class="lives"></div>
 
-    <!-- Donde se renderizan los grupos resueltos -->
     <div id="solvedGroups"></div>
-
-    <!-- Donde se renderizan las tarjetas restantes -->
     <div class="grid" id="grid"></div>
 
-    <div class="controls">
-      <button id="shuffleBtn">Mezclar</button>
-      <button id="submitBtn">Enviar grupo</button>
-      <button id="resetBtn">Reiniciar</button>
+    <div class="controls" id="controls">
+      <button id="shuffleBtn">Shuffle</button>
+      <button id="submitBtn">Submit</button>
+      <button id="deselectBtn">Deselect</button>
     </div>
   </div>
 
   <script>
-    const allGroups = [
-      { name: "Animales", words: ["Gato", "Perro", "Ratón", "Conejo"] },
-      { name: "Colores", words: ["Rojo", "Azul", "Verde", "Amarillo"] },
-      { name: "Frutas", words: ["Manzana", "Banana", "Pera", "Uva"] },
-      { name: "Vehículos", words: ["Coche", "Moto", "Bicicleta", "Camión"] }
-    ];
-
-    let solved = []; // [{name: "", words: []}]
+    const allGroups = {{ allGroups | tojson }};
+    let solved = [];
     let selectedWords = [];
     let remainingWords = [];
+    let lives = 4;
+    let gameOver = false;
 
     const grid = document.getElementById("grid");
     const message = document.getElementById("message");
     const solvedGroups = document.getElementById("solvedGroups");
+    const livesDisplay = document.getElementById("lives");
+    const controls = document.getElementById("controls");
 
-    function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
-    }
+    function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
     function initGame() {
       solved = [];
       selectedWords = [];
       remainingWords = allGroups.flatMap(g => g.words);
+      lives = 4;
+      gameOver = false;
+      controls.style.display = "flex";
       renderGame();
+      updateLives();
+      enableGame();
+      showMessage("", true);
     }
 
     function renderGame() {
       solvedGroups.innerHTML = "";
       grid.innerHTML = "";
 
-      // Mostrar grupos resueltos
-      solved.forEach(group => {
+      if (!gameOver) {
+        renderSolvedGroups(solved);
+        const shuffled = shuffle([...remainingWords]);
+        shuffled.forEach(word => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.textContent = word;
+          card.onclick = () => toggleSelect(card);
+          grid.appendChild(card);
+        });
+      } else {
+        let orderedGroups = [...allGroups]; 
+        renderSolvedGroups(orderedGroups);
+      }
+    }
+
+    function renderSolvedGroups(groups) {
+      groups.forEach(group => {
         const section = document.createElement("div");
         section.className = "group-section";
 
@@ -180,6 +134,11 @@
         group.words.forEach(word => {
           const card = document.createElement("div");
           card.className = "card solved";
+          if (group.name === allGroups[0].name) {
+            card.classList.add("darkblue");
+          } else {
+            card.classList.add("lightblue");
+          }
           card.textContent = word;
           groupGrid.appendChild(card);
         });
@@ -187,16 +146,6 @@
         section.appendChild(title);
         section.appendChild(groupGrid);
         solvedGroups.appendChild(section);
-      });
-
-      // Mostrar cartas restantes
-      const shuffled = shuffle([...remainingWords]);
-      shuffled.forEach(word => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.textContent = word;
-        card.onclick = () => toggleSelect(card);
-        grid.appendChild(card);
       });
     }
 
@@ -213,8 +162,8 @@
     }
 
     function submitGroup() {
-      if (selectedWords.length !== 4) {
-        showMessage("Selecciona exactamente 4 palabras.", false);
+      if (selectedWords.length !== 4 || gameOver) {
+        showMessage("Select only four words!", false);
         return;
       }
 
@@ -223,16 +172,75 @@
       );
 
       if (found) {
-        showMessage(`¡Grupo "${found.name}" correcto! 🎉`, true);
-        // Guardar grupo resuelto
         solved.push(found);
-        // Eliminar palabras de los no resueltos
         remainingWords = remainingWords.filter(w => !found.words.includes(w));
-        renderGame();
         selectedWords = [];
+
+        if (solved.length === 4) {
+          showMessage("You won! Congratulations!🎉", true);
+          endGame();
+        } else {
+          showMessage(`¡Group "${found.name}" correct! 🎉`, true);
+          renderGame();
+        }
       } else {
-        showMessage("Grupo incorrecto. ❌", false);
+        let almost = allGroups.find(group => {
+          let count = group.words.filter(w => selectedWords.includes(w)).length;
+          return count === 3;
+        });
+
+        if (almost) {
+          lives--;
+          updateLives();
+          if (lives <= 0) {
+            showMessage("Maybe next time ❌", false);
+            endGame();
+          } else {
+            showMessage("One Away ⚠️", false);
+          }
+        } else {
+          lives--;
+          updateLives();
+          if (lives <= 0) {
+            showMessage("Maybe next time ❌", false);
+            endGame();
+          } else {
+            showMessage("Group incorrect. ❌", false);
+          }
+        }
       }
+    }
+
+    function endGame() {
+      gameOver = true;
+      disableGame();
+      controls.style.display = "none";
+      renderGame();
+    }
+
+    function updateLives() {
+      livesDisplay.innerHTML = "";
+      for (let i = 0; i < 4; i++) {
+        const dot = document.createElement("div");
+        dot.className = "life";
+        if (i >= lives) {
+          dot.classList.add("lost");
+        }
+        livesDisplay.appendChild(dot);
+      }
+    }
+
+    function disableGame() {
+      document.querySelectorAll(".card").forEach(c => c.onclick = null);
+      document.getElementById("submitBtn").disabled = true;
+      document.getElementById("shuffleBtn").disabled = true;
+      document.getElementById("deselectBtn").disabled = true;
+    }
+
+    function enableGame() {
+      document.getElementById("submitBtn").disabled = false;
+      document.getElementById("shuffleBtn").disabled = false;
+      document.getElementById("deselectBtn").disabled = false;
     }
 
     function showMessage(text, success) {
@@ -242,14 +250,19 @@
 
     document.getElementById("submitBtn").addEventListener("click", submitGroup);
     document.getElementById("shuffleBtn").addEventListener("click", () => {
-      selectedWords = [];
-      renderGame();
+      if (!gameOver) {
+        selectedWords = [];
+        renderGame();
+      }
     });
-    document.getElementById("resetBtn").addEventListener("click", initGame);
+    document.getElementById("deselectBtn").addEventListener("click", () => {
+      if (!gameOver) {
+        selectedWords = [];
+        renderGame();
+      }
+    });
 
-    // Iniciar juego
     initGame();
   </script>
 </body>
 </html>
-
