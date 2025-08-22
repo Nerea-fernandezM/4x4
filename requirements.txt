@@ -1,0 +1,11 @@
+# Web framework
+Flask==2.3.2
+
+# Servidor WSGI para producción
+gunicorn==21.2.0
+
+# Dependencias principales de Flask (incluidas pero se fijan para evitar problemas)
+Werkzeug==2.3.6
+Jinja2==3.1.2
+itsdangerous==2.1.2
+click==8.1.7
