@@ -27,13 +27,21 @@
     .life.lost { background-color: #ddd; }
     .group-section { margin-bottom: 1rem; text-align: left; }
     .group-title { font-weight: bold; margin: 0.5rem 0; font-size: 1.1rem; }
-    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; }
-    @media (max-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+    .grid { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 0.5rem; 
+      margin-bottom: 1.5rem; 
+    }
     .card {
       background-color: #fff; border: 2px solid #ddd; border-radius: 8px;
       padding: 0.8rem; font-weight: bold; cursor: pointer;
       transition: all 0.2s ease-in-out; user-select: none; font-size: 0.9rem;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
     .card:hover { background-color: #f0f0f0; transform: scale(1.02); }
     .card.selected { background-color: #e0f0ff; border-color: #3399ff; }
@@ -47,6 +55,42 @@
       transition: background 0.2s ease;
     }
     button:hover { background-color: #155cb0; }
+
+    /* Ajustes específicos para móviles */
+    @media (max-width: 480px) {
+      .container { padding: 0.5rem; }
+      h1 { font-size: 1.5rem; }
+      .grid { 
+        gap: 0.3rem;
+        margin-bottom: 1rem;
+      }
+      .card {
+        padding: 0.6rem 0.3rem;
+        font-size: 0.8rem;
+        min-height: 55px;
+      }
+      .controls { 
+        gap: 0.3rem; 
+        margin-top: 0.5rem;
+      }
+      button {
+        min-width: 80px;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.9rem;
+      }
+      .message { font-size: 1rem; }
+      .group-title { font-size: 1rem; }
+    }
+
+    /* Para pantallas muy pequeñas, ajustar aún más */
+    @media (max-width: 320px) {
+      .card {
+        padding: 0.5rem 0.2rem;
+        font-size: 0.75rem;
+        min-height: 50px;
+      }
+      .grid { gap: 0.2rem; }
+    }
   </style>
 </head>
 <body>
@@ -71,7 +115,26 @@
   </div>
 
   <script>
-    const allGroups = {{ allGroups | tojson }};
+    // Datos de ejemplo para demostración
+    const allGroups = [
+      {
+        name: "ANIMALS",
+        words: ["CAT", "DOG", "BIRD", "FISH"]
+      },
+      {
+        name: "COLORS",
+        words: ["RED", "BLUE", "GREEN", "YELLOW"]
+      },
+      {
+        name: "FRUITS",
+        words: ["APPLE", "BANANA", "ORANGE", "GRAPE"]
+      },
+      {
+        name: "COUNTRIES",
+        words: ["SPAIN", "FRANCE", "ITALY", "GERMANY"]
+      }
+    ];
+    
     let solved = [];
     let selectedWords = [];
     let remainingWords = [];
