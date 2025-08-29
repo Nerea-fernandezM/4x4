@@ -1,13 +1,12 @@
 from flask import Flask, render_template
-import generate_connection
-import os
+import read_connection
 
 app = Flask(__name__)
 
 @app.route("/")
 def index():
     # Llamar a tu función que genera los grupos de palabras
-    choices = generate_connection.generate()
+    choices = read_connection.read()
 
     # Adaptar el diccionario al formato que espera el frontend
     all_groups = []
@@ -21,7 +20,4 @@ def index():
     return render_template("index.html", allGroups=all_groups)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host="0.0.0.0", port=port)
-
-
+    app.run(debug=True)

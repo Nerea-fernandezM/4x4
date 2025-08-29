@@ -45,7 +45,11 @@ def select_categories(words:dict)->dict:
             text = sel[clave]
             new_data = {clave:text}
             result.update(new_data)
-            file.write(f"{key}:{clave}:{text}\n")
+            string = ""
+            for word in text:
+                string += f"{word},"
+            string.strip(",")
+            file.write(f"{key}:{clave}:{string}\n")
             count[key] -= 1
     file.close()
     return result
@@ -73,9 +77,23 @@ def generate()->dict:
     categories = select_categories(words)
     return select_words(categories)
 
+def write(words:dict):
+    file = open('final.csv', 'w', encoding="utf-8")
+    count = 3
+    for key in words:
+        text = words[key]
+        list = ""
+        for word in text:
+            list += f"{word},"
+        list.strip(",")
+        file.write(f"{key}:{list[:-1]}")
+        if count > 0: 
+            file.write(f"\n")
+            count -= 1
+    file.close()
+
 def main():
-    choices = generate()
-    print(choices)
+    write(generate())
 
 if __name__ == "__main__":
     main()
