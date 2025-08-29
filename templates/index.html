@@ -115,25 +115,7 @@
   </div>
 
   <script>
-    // Datos de ejemplo para demostración
-    const allGroups = [
-      {
-        name: "ANIMALS",
-        words: ["CAT", "DOG", "BIRD", "FISH"]
-      },
-      {
-        name: "COLORS",
-        words: ["RED", "BLUE", "GREEN", "YELLOW"]
-      },
-      {
-        name: "FRUITS",
-        words: ["APPLE", "BANANA", "ORANGE", "GRAPE"]
-      },
-      {
-        name: "COUNTRIES",
-        words: ["SPAIN", "FRANCE", "ITALY", "GERMANY"]
-      }
-    ];
+    const allGroups = {{ allGroups | tojson }};
     
     let solved = [];
     let selectedWords = [];
