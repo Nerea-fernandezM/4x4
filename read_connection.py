@@ -1,14 +1,8 @@
-def read()->dict:
-    result:dict = {}
-    file = open('final.csv', 'r', encoding="utf-8")
-    for line in file:
-        fields = line.split(":")
-        words = fields[1].split(",")
-        title = str(fields[0])
-        choice = {title:words}
-        result.update(choice)
-    file.close()
-    return result
+import database
+
+def read():
+    """Leer el juego actual desde la base de datos"""
+    return database.read_current_game()
 
 def main():
     choices = read()
