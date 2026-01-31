@@ -1,6 +1,6 @@
 import os
-import psycopg
-from psycopg.rows import dict_row
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 def get_db_connection():
     """Crear conexión a la base de datos PostgreSQL"""
@@ -8,7 +8,7 @@ def get_db_connection():
     if database_url and database_url.startswith('postgres://'):
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
     
-    conn = psycopg.connect(database_url, row_factory=dict_row)
+    conn = psycopg2.connect(database_url, cursor_factory=RealDictCursor)
     return conn
 
 def read_used():
@@ -97,20 +97,28 @@ def save_current_game(words_dict):
     cur = conn.cursor()
     
     try:
-        # Limpiar juego anterior (eliminar la única fila si existe)
-        cur.execute("DELETE FROM current_game")
-        
         # Convertir el diccionario a una lista ordenada
         categories = list(words_dict.items())
         
-        # Insertar el nuevo juego como UNA SOLA FILA con 4 categorías
+        # SOLUCIÓN: Usar UPSERT (INSERT ... ON CONFLICT) para actualizar siempre la misma fila
         cur.execute("""
             INSERT INTO current_game 
-            (category1_name, category1_words,
+            (id, category1_name, category1_words,
              category2_name, category2_words,
              category3_name, category3_words,
              category4_name, category4_words)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (id) 
+            DO UPDATE SET
+                category1_name = EXCLUDED.category1_name,
+                category1_words = EXCLUDED.category1_words,
+                category2_name = EXCLUDED.category2_name,
+                category2_words = EXCLUDED.category2_words,
+                category3_name = EXCLUDED.category3_name,
+                category3_words = EXCLUDED.category3_words,
+                category4_name = EXCLUDED.category4_name,
+                category4_words = EXCLUDED.category4_words,
+                created_at = CURRENT_TIMESTAMP
         """, (
             categories[0][0], ','.join(categories[0][1]),
             categories[1][0], ','.join(categories[1][1]),
@@ -138,7 +146,7 @@ def read_current_game():
                    category3_name, category3_words,
                    category4_name, category4_words
             FROM current_game 
-            LIMIT 1
+            WHERE id = 1
         """)
         row = cur.fetchone()
         
@@ -156,5 +164,4 @@ def read_current_game():
         return result
     finally:
         cur.close()
-
         conn.close()
