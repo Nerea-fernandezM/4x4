@@ -290,13 +290,11 @@
       document.querySelectorAll(".card").forEach(c => c.onclick = null);
       document.getElementById("submitBtn").disabled = true;
       document.getElementById("shuffleBtn").disabled = true;
-      document.getElementById("deselectBtn").disabled = true;
     }
 
     function enableGame() {
       document.getElementById("submitBtn").disabled = false;
       document.getElementById("shuffleBtn").disabled = false;
-      document.getElementById("deselectBtn").disabled = false;
     }
 
     function showMessage(text, success) {
@@ -311,18 +309,13 @@
         renderGame();
       }
     });
-    document.getElementById("deselectBtn").addEventListener("click", () => {
-      if (!gameOver) {
-        selectedWords = [];
-        renderGame();
-      }
-    });
 
     initGame();
   </script>
 </body>
 
 </html>
+
 
 
 
